@@ -13,12 +13,16 @@ The SafeDelegatedERC721Proxy contract keeps track of permissions granted between
 #### ERC721 Interface
 This interface defines the standard functions for transferring ERC721 tokens.
 
+```
 interface ERC721 {
     function transferFrom(address from, address to, uint256 tokenId) external;
 }
+```
+
 #### SafeDelegatedERC721ProxyInterface
 This interface specifies the functions that the SafeDelegatedERC721Proxy contract implements.
 
+```
 interface SafeDelegatedERC721ProxyInterface {
     function canSellNFT(address owner, address nft, uint256 tokenId, address spender) external view returns (bool, uint256);
     function canTransferNFT(address owner, address nft, uint256 tokenId, address spender) external view returns (bool);
@@ -33,41 +37,53 @@ interface SafeDelegatedERC721ProxyInterface {
         bool canBeTransferred
     ) external;
 }
+```
 
 ### Contract Functions
 
 #### generateAllowanceKey
 
+```
 function generateAllowanceKey(address owner, address nft, uint256 tokenId, address spender) internal pure returns (bytes32)
+```
 
 Generates a unique key based on the provided parameters. This key is used to store and retrieve allowance information.
 
 #### canSellNFT
 
+```
 function canSellNFT(address owner, address nft, uint256 tokenId, address spender) external view returns (bool, uint256)
+```
 
 Checks if the given spender has permission to sell an ERC721 token on behalf of the owner. Returns a boolean indicating the permission status and the minimum price required for the sale.
 
 #### canTransferNFT
 
+```
 function canTransferNFT(address owner, address nft, uint256 tokenId, address spender) external view returns (bool)
+```
 
 Checks if the given spender has permission to transfer an ERC721 token on behalf of the owner. Returns a boolean indicating the permission status.
 
 #### sellNFT
 
+```
 function sellNFT(address owner, address nft, uint256 tokenId, address destination) external payable
+```
 
 Allows the spender to sell an ERC721 token on behalf of the owner. Verifies permissions, minimum price, and handles the transfer of tokens and funds.
 
 #### transferNFT
 
+```
 function transferNFT(address owner, address nft, uint256 tokenId, address destination) external
+```
 
 Allows the spender to transfer an ERC721 token on behalf of the owner. Verifies permissions and handles the secure transfer of the token.
 
 #### setAllowance
 
+```
 function setAllowance(
     address nft,
     uint256 tokenId,
@@ -76,6 +92,7 @@ function setAllowance(
     address destination,
     bool canBeTransferred
 ) external
+```
 
 Sets an allowance for the specified ERC721 token. The owner can grant or revoke permissions for selling and transferring, along with associated parameters like minimum price and destination address.
 

@@ -33,7 +33,7 @@ contract SafeDelegatedERC721Proxy is SafeDelegatedERC721ProxyInterface {
 
     mapping(bytes32 => AllowanceInfo) public allowances;
 
-    function generateAllowanceKey(address owner, address nft, uint256 tokenId, address spender) internal pure returns (bytes32) {
+    function generateAllowanceKey(address owner, address nft, uint256 tokenId, address spender) public pure returns (bytes32) {
         return keccak256(abi.encodePacked(owner, nft, tokenId, spender));
     }
 
@@ -58,6 +58,8 @@ contract SafeDelegatedERC721Proxy is SafeDelegatedERC721ProxyInterface {
 
         ERC721 nftContract = ERC721(nft);
         nftContract.transferFrom(owner, destination, tokenId);
+
+        delete allowances[key];
     }
 
     function transferNFT(address owner, address nft, uint256 tokenId, address destination) external override {
@@ -67,6 +69,8 @@ contract SafeDelegatedERC721Proxy is SafeDelegatedERC721ProxyInterface {
         // Implicitly the caller is allowed to send
         ERC721 nftContract = ERC721(nft);
         nftContract.transferFrom(owner, destination, tokenId);
+
+        delete allowances[key];
     }
 
     function setAllowance(

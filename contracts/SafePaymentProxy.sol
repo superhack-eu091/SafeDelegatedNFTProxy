@@ -3,22 +3,9 @@ pragma solidity ^0.8.0;
 
 // from https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/IERC721.sol
 interface IERC721 {
-     /**
-     * @dev Transfers `tokenId` token from `from` to `to`.
-     *
-     * WARNING: Note that the caller is responsible to confirm that the recipient is capable of receiving ERC721
-     * or else they may be permanently lost. Usage of {safeTransferFrom} prevents loss, though the caller must
-     * understand this adds an external call which potentially creates a reentrancy vulnerability.
-     *
-     * Requirements:
-     *
-     * - `from` cannot be the zero address.
-     * - `to` cannot be the zero address.
-     * - `tokenId` token must be owned by `from`.
-     * - If the caller is not `from`, it must be approved to move this token by either {approve} or {setApprovalForAll}.
-     *
-     * Emits a {Transfer} event.
-     */
+
+    function ownerOf(uint256 _tokenId) external view returns (address);
+
     function transferFrom(address from, address to, uint256 tokenId) external;
 }
 
@@ -65,7 +52,6 @@ contract TrustLessNFTBuyer is IERC721Receiver {
 
     struct PurchaseInfo {
         bool initiated;
-        bool completed;
         uint256 maxPrice;
     }
 
@@ -88,7 +74,7 @@ contract TrustLessNFTBuyer is IERC721Receiver {
 
     function setMaxAmountToPayForNFT(address nft, uint256 tokenId, uint256 amount) public {
         bytes32 key = generateAllowanceKey(nft, tokenId);
-        allowances[key] = PurchaseInfo({initiated:false, completed:false, maxPrice:amount});
+        allowances[key] = PurchaseInfo({initiated:false, maxPrice:amount});
     }
 
     function buyNFT(address nft, uint256 tokenId, uint256 amount, address payable seller) public payable {
@@ -98,14 +84,12 @@ contract TrustLessNFTBuyer is IERC721Receiver {
         require(!allowances[key].initiated, "Already in progress");
 
         allowances[key].initiated = true;
-        // Send funds which should trigger the send of the NFT in the same call stack
+
+        // It's expected the receiver of the funds sends the NFT in the same transaction
         transferEtherFromGnosisSafe(seller, amount);
 
-        // NOTE: It's expected the receiver of the funds sends the NFT at the same time as receiving funds
-        // NOTE: This will result in a call to onERC721Received before transferEtherFromGnosisSafe returns
-
         // Resulting in the NFT now belonging to the user
-        require(allowances[key].completed, "Didn't receive NFT");
+        require(IERC721(nft).ownerOf(tokenId) == address(this), "NFT not transferred");
 
         delete allowances[key];
 
@@ -115,9 +99,9 @@ contract TrustLessNFTBuyer is IERC721Receiver {
 
     function transferEtherFromGnosisSafe(address payable _to, uint256 _amount) public {
         bytes memory data;  // Optional data for the transaction
-        //uint8 operation = 0;  // 0 = CALL, 1 = DELEGATECALL, 2 = CREATE
         Enum.Operation op = Enum.Operation.DelegateCall;
 
+        // TODO add data for the executor receiver (this contract), NFT address, ID
         (bool success) = gnosisSafeInstance.execTransactionFromModule(
             _to,
             _amount,
@@ -128,12 +112,7 @@ contract TrustLessNFTBuyer is IERC721Receiver {
         require(success, "Transfer from Gnosis Safe failed");
     }
 
-    function onERC721Received(address operator, address, uint256 tokenId, bytes calldata) external returns (bytes4) {
-        // TODO confirm operator is the NFT contract
-        bytes32 key = generateAllowanceKey(operator, tokenId);
-        // Should be waiting to receive NFT that we've paid for
-        require(allowances[key].initiated, "Transfer not expected");
-        allowances[key].completed = true;
+    function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {
         return IERC721Receiver.onERC721Received.selector;
     }
 

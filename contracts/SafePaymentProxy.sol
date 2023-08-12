@@ -101,12 +101,16 @@ contract TrustLessNFTBuyer is IERC721Receiver {
         // Send funds which should trigger the send of the NFT in the same call stack
         transferEtherFromGnosisSafe(seller, amount);
 
-        IERC721(nft).transferFrom(address(this), owner, tokenId);
-
-        delete allowances[key];
+        // NOTE: It's expected the receiver of the funds sends the NFT at the same time as receiving funds
+        // NOTE: This will result in a call to onERC721Received before transferEtherFromGnosisSafe returns
 
         // Resulting in the NFT now belonging to the user
         require(allowances[key].completed, "Didn't receive NFT");
+
+        delete allowances[key];
+
+        // Now this contract owns the NFT, forward it to the real owner
+        IERC721(nft).transferFrom(address(this), owner, tokenId);
     }
 
     function transferEtherFromGnosisSafe(address payable _to, uint256 _amount) public {

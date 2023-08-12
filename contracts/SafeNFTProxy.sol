@@ -64,6 +64,7 @@ contract SafeDelegatedERC721Proxy {
     }
 
     function setMaxAmountToPayForNFT(address owner, address nft, uint256 tokenId, uint256 amount, address spender) public {
+        require(msg.sender == owner, "Only owner can set allowance");
         bytes32 key = generateBuyAllowanceKey(owner, nft, tokenId);
         allowances[key] = PurchaseInfo({initiated:false, maxPrice:amount, gnosisSafeInstance:Executor(spender)});
     }
@@ -73,7 +74,7 @@ contract SafeDelegatedERC721Proxy {
         address nft,
         uint256 tokenId,
         uint256 amount,
-        address payable seller) public payable {
+        address payable seller) public {
 
         bytes32 key = generateBuyAllowanceKey(owner, nft, tokenId);
         require(amount <= allowances[key].maxPrice);

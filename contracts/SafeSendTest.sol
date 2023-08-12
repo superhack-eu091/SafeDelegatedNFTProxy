@@ -40,4 +40,22 @@ contract SafeSendTest {
         require(success, "Transfer from Gnosis Safe failed");
     }
 
+    function transferEtherFromGnosisSafeCall(
+        Executor payer,
+        address payable _to,
+        uint256 _amount) public {
+
+        bytes memory data;
+
+        Enum.Operation op = Enum.Operation.Call;
+        (bool success) = payer.execTransactionFromModule(
+            _to,
+            _amount,
+            data,
+            op
+        );
+
+        require(success, "Transfer from Gnosis Safe failed");
+    }
+
 }

@@ -106,8 +106,7 @@ contract SafeDelegatedERC721Proxy {
         address payable _to,
         uint256 _amount) public {
 
-        // TODO add data for the executor receiver (this contract), nft address, tokenId
-        bytes memory data;  // Optional data for the transaction
+        bytes memory data = abi.encodePacked(address(this), nft, tokenId);
 
         Enum.Operation op = Enum.Operation.DelegateCall;
         (bool success) = payer.execTransactionFromModule(

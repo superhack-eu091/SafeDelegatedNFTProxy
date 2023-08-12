@@ -77,7 +77,7 @@ contract SafeDelegatedERC721Proxy {
         address payable seller) public {
 
         bytes32 key = generateBuyAllowanceKey(owner, nft, tokenId);
-        require(amount <= allowances[key].maxPrice);
+        require(amount <= allowances[key].maxPrice, "Price less than expected");
         // Protect against re-entrancy
         require(!allowances[key].initiated, "Already in progress");
 
@@ -193,5 +193,9 @@ contract SafeDelegatedERC721Proxy {
             minPrice: minPrice,
             canBeTransferred: canBeTransferred
         });
+    }
+
+    function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {
+        return IERC721Receiver.onERC721Received.selector;
     }
 }

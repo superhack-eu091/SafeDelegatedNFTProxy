@@ -42,9 +42,6 @@ Entities:
 
 ![image](https://github.com/superhack-eu091/SafeDelegatedProxy/assets/21056525/d4d56ecc-cacc-40a4-91a8-d01dcb5bb81f)
 
-* SCW approves DEL to sell an NFT
-* SCW calls setAllowance( [nft address and id], canBeSold=true, )
-
 ## Deployments
 
 See https://github.com/superhack-eu091/TiGr-Bot/blob/main/README.md#deployed-contracts.

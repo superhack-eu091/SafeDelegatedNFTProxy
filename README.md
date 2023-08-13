@@ -6,85 +6,66 @@ It was written to be the interface between a Telegram bot and a Safe smart contr
 
 ## Overview
 
-The SafeDelegatedERC721Proxy contract keeps track of permissions granted between an ERC721 NFT owner and another contract. It can be used to set fine grained permissions based on certain constraints. It introduces the concept of allowances, where an owner can grant specific permissions to another address to sell or transfer their ERC721 tokens and under what conditions. The contract ensures that these operations are performed securely, verifying the permissions and handling the transfer of tokens and funds accordingly.
+The SafeDelegatedERC721Proxy contract consists of two main functionalities: buying and selling ERC721 tokens. It leverages the Gnosis Safe executor to execute transactions without the counter-party having access to all the NFTs and tokens in the wallet. 
 
-### Interfaces
+It does this by maintaining allowances between the buying and selling of NFTs, specifically what NFTs the owner wants to buy (and how much for) as well as what they are prepared to sell, who to and what is the minimum they expect to receive for the NFT. The contract ensures that these operations are performed securely, verifying the permissions and handling the transfer of tokens and funds accordingly.
 
-#### ERC721 Interface
-This interface defines the standard functions for transferring ERC721 tokens.
+### Buying NFTs
 
-```
-interface ERC721 {
-    function transferFrom(address from, address to, uint256 tokenId) external;
-}
-```
+The buying logic allows users to set a maximum amount they are willing to pay for a specific ERC721 token. When a user initiates a purchase, the contract verifies the maximum price set by the user and transfers the specified amount to the seller's address. Simultaneously, the NFT is transferred to the buyer. The contract prevents re-entrancy attacks during the process.
 
-#### SafeDelegatedERC721ProxyInterface
-This interface specifies the functions that the SafeDelegatedERC721Proxy contract implements.
+### Selling NFTs
 
-```
-interface SafeDelegatedERC721ProxyInterface {
-    function canSellNFT(address owner, address nft, uint256 tokenId, address spender) external view returns (bool, uint256);
-    function canTransferNFT(address owner, address nft, uint256 tokenId, address spender) external view returns (bool);
-    function sellNFT(address owner, address nft, uint256 tokenId, address destination) external payable;
-    function transferNFT(address owner, address nft, uint256 tokenId, address destination) external;
-    function setAllowance(
-        address nft,
-        uint256 tokenId,
-        bool canBeSold,
-        uint256 minPrice,
-        address destination,
-        bool canBeTransferred
-    ) external;
-}
-```
+The selling logic enables users to specify whether their ERC721 tokens can be sold and transferred. Sellers can set minimum prices for their tokens if they wish to receive a certain amount before transferring ownership. Transfers and sales are securely executed using the Gnosis Safe executor.
 
-### Contract Functions
+## Logic flow for Telegram bot <> Safe smart contract wallet interactions
 
-#### generateAllowanceKey
+Entities:
+* Bob prod would-be owner / owner of NFT
+* Safe smart contract wallet (SCW)
+* Safe delegate - this contract (DEL)
+* Telegram bot EOA (TG)
+* Market adaptor (MARKET)
 
-```
-function generateAllowanceKey(address owner, address nft, uint256 tokenId, address spender) internal pure returns (bytes32)
-```
+### Bob wants to buy an NFT
 
-Generates a unique key based on the provided parameters. This key is used to store and retrieve allowance information.
+TODO: IMG
+TODO: Describe flow
 
-#### canSellNFT
+### Bob wants to sell an NFT
 
-```
-function canSellNFT(address owner, address nft, uint256 tokenId, address spender) external view returns (bool, uint256)
-```
+TODO: IMG
+TODO: Describe flow
 
-Checks if the given spender has permission to sell an ERC721 token on behalf of the owner. Returns a boolean indicating the permission status and the minimum price required for the sale.
+* SCW approves DEL to sell an NFT
+* SCW calls setAllowance( [nft address and id], canBeSold=true, )
 
-#### canTransferNFT
+## Deployments
 
-```
-function canTransferNFT(address owner, address nft, uint256 tokenId, address spender) external view returns (bool)
-```
+See https://github.com/superhack-eu091/TiGr-Bot/blob/main/README.md#deployed-contracts.
 
-Checks if the given spender has permission to transfer an ERC721 token on behalf of the owner. Returns a boolean indicating the permission status.
+## Usage
 
-#### sellNFT
+The SafeDelegatedERC721Proxy contract provides a set of functions to interact with the buying and selling functionalities:
+
+### Buying
+
+#### setMaxAmountToPayForNFT
+
+Allows the owner of an NFT to set a maximum amount they are willing to pay for its purchase.
+
+#### buyNFT
+
+Initiates the process of buying an NFT from a seller, considering the set maximum price.
+
+### Selling
+
+#### setSellAllowance
+
+Sellers can set allowances for their NFTs to be sold, specifying minimum prices and transfer permissions.
 
 ```
-function sellNFT(address owner, address nft, uint256 tokenId, address destination) external payable
-```
-
-Allows the spender to sell an ERC721 token on behalf of the owner. Verifies permissions, minimum price, and handles the transfer of tokens and funds.
-
-#### transferNFT
-
-```
-function transferNFT(address owner, address nft, uint256 tokenId, address destination) external
-```
-
-Allows the spender to transfer an ERC721 token on behalf of the owner. Verifies permissions and handles the secure transfer of the token.
-
-#### setAllowance
-
-```
-function setAllowance(
+function setSellAllowance(
     address nft,
     uint256 tokenId,
     bool canBeSold,
@@ -96,16 +77,19 @@ function setAllowance(
 
 Sets an allowance for the specified ERC721 token. The owner can grant or revoke permissions for selling and transferring, along with associated parameters like minimum price and destination address.
 
-## Usage
+#### sellNFT
 
-Deploy the SafeDelegatedERC721Proxy contract to the Ethereum network.
+Allows the spender to sell an ERC721 token on behalf of the owner. Verifies permissions, minimum price, and handles the transfer of tokens and funds.
 
-Interact with the contract's functions through a compatible user interface or by directly calling the functions using Ethereum transactions.
+#### transferNFT
 
-## Deployments
+Allows the spender to transfer an ERC721 token on behalf of the owner. Verifies permissions and handles the secure transfer of the token.
 
-* goerli https://goerli.etherscan.io/address/0x2e0092bee1ff5902278d64d4e760920c6fd10974#code
-* Optimism goerli https://goerli-optimism.etherscan.io/address/0xb9000feb347ab0b180f498f06939834dd7886f94#code
+#### canSellNFT and canTransferNFT
+
+Query functions to check if an NFT can be sold or transferred.
+
+Checks if the given spender has permission to sell / transfer an ERC721 token on behalf of the owner. Returns a boolean indicating the permission status and the minimum price required for the sale for canSellNFT and a boolean indicating the permission status for canTransferNFT
 
 ## License
 This contract is licensed under the MIT License. See the LICENSE file for details.

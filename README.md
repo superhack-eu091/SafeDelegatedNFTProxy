@@ -29,13 +29,15 @@ Entities:
 
 ### Bob wants to buy an NFT
 
-TODO: IMG
-TODO: Describe flow
+![image](https://github.com/superhack-eu091/SafeDelegatedProxy/assets/21056525/9f29cfda-b511-467e-919d-b44a7957e8e3)
+
+🏗️ TODO: Describe flow
 
 ### Bob wants to sell an NFT
 
-TODO: IMG
-TODO: Describe flow
+![image](https://github.com/superhack-eu091/SafeDelegatedProxy/assets/21056525/d4d56ecc-cacc-40a4-91a8-d01dcb5bb81f)
+
+🏗️ TODO: Describe flow
 
 * SCW approves DEL to sell an NFT
 * SCW calls setAllowance( [nft address and id], canBeSold=true, )

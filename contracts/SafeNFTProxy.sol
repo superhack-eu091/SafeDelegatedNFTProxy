@@ -75,7 +75,7 @@ contract SafeDelegatedERC721Proxy {
 
         // It's expected the receiver of the funds sends the NFT in the same transaction
         transferEtherFromGnosisSafe(
-            allowances[key].gnosisSafeInstance,         // Safe SCW funds will be taken from
+            Executor(owner),         // Safe SCW funds will be taken from
             nft,                                        // NFT being bought
             tokenId,                                    // ID of NFT being bought
             seller,                                     // Market destination where NFT will be sent from

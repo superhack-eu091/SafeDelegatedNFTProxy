@@ -11,16 +11,6 @@ interface IERC721 {
     function transferFrom(address from, address to, uint256 tokenId) external;
 }
 
-// from import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-interface IERC721Receiver {
-    function onERC721Received(
-        address operator,
-        address from,
-        uint256 tokenId,
-        bytes calldata data
-    ) external returns (bytes4);
-}
-
 // From code sample found
 contract Enum {
     enum Operation {
@@ -195,7 +185,13 @@ contract SafeDelegatedERC721Proxy {
         });
     }
 
-    function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {
-        return IERC721Receiver.onERC721Received.selector;
+    // from import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes memory
+    ) public virtual returns (bytes4) {
+        return this.onERC721Received.selector;
     }
 }

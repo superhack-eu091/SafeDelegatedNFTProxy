@@ -10,6 +10,10 @@ The SafeDelegatedERC721Proxy contract consists of two main functionalities: buyi
 
 It does this by maintaining allowances between the buying and selling of NFTs, specifically what NFTs the owner wants to buy (and how much for) as well as what they are prepared to sell, who to and what is the minimum they expect to receive for the NFT. The contract ensures that these operations are performed securely, verifying the permissions and handling the transfer of tokens and funds accordingly.
 
+## Demo
+
+https://github.com/superhack-eu091/SafeDelegatedProxy/assets/21056525/7314e7d5-9a3d-4624-b24c-f98283f6132f
+
 ### Buying NFTs
 
 The buying logic allows users to set a maximum amount they are willing to pay for a specific ERC721 token. When a user initiates a purchase, the contract verifies the maximum price set by the user and transfers the specified amount to the seller's address. Simultaneously, the NFT is transferred to the buyer. The contract prevents re-entrancy attacks during the process.
@@ -72,6 +76,17 @@ function setMaxAmountToPayForNFT(
 Can only be called by *owner* address.
 
 Allows the owner of an NFT to set a maximum amount they are willing to pay for its purchase.
+
+#### getMaxAmountToPayForNFT
+
+```
+function getMaxAmountToPayForNFT(
+    address owner,
+    address nft,
+    uint256 tokenId) public view returns (uint256)
+```
+
+Returns the max price in wei that this user has allowed a spender to take for a particular NFT. If the function returns 0, it means the user has not allowed this NFT to be bought.
 
 #### buyNFT
 

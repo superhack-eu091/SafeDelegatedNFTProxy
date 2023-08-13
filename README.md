@@ -14,6 +14,8 @@ It does this by maintaining allowances between the buying and selling of NFTs, s
 
 https://github.com/superhack-eu091/SafeDelegatedProxy/assets/21056525/7314e7d5-9a3d-4624-b24c-f98283f6132f
 
+[Higher quality narrated video](https://github.com/superhack-eu091/SafeDelegatedProxy/raw/main/TiGr%20Bot%20narrated.mp4)
+
 ### Buying NFTs
 
 The buying logic allows users to set a maximum amount they are willing to pay for a specific ERC721 token. When a user initiates a purchase, the contract verifies the maximum price set by the user and transfers the specified amount to the seller's address. Simultaneously, the NFT is transferred to the buyer. The contract prevents re-entrancy attacks during the process.

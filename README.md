@@ -1,4 +1,4 @@
-# Safe delegated ERC721 Proxy contract documentation
+# Safe delegated ERC721 Proxy contract
 
 This repository contains the Solidity smart contract code for the SafeDelegatedERC721Proxy contract, which provides a secure and flexible way to manage allowances and permissions for transferring and selling ERC721 tokens on behalf of their owners. The contract interfaces with the ERC721 standard and offers functions to set allowances, check permissions, and execute safe transfers and sales of ERC721 tokens.
 

@@ -54,17 +54,47 @@ The SafeDelegatedERC721Proxy contract provides a set of functions to interact wi
 
 #### setMaxAmountToPayForNFT
 
+```
+function setMaxAmountToPayForNFT(
+    address owner,
+    address nft,
+    uint256 tokenId,
+    uint256 amount,
+    address spender) public
+```
+
+* *owner* will be the new owner of the NFT (must be a Safe wallet address)
+* *nft* contract for ERC721 being bought
+* *tokenId* nft index
+* *amount* maximum amount new owner is willing to pay for NFT
+* *spender* Safe wallet address for owner (currently ignored)
+
+Can only be called by *owner* address.
+
 Allows the owner of an NFT to set a maximum amount they are willing to pay for its purchase.
 
 #### buyNFT
 
-Initiates the process of buying an NFT from a seller, considering the set maximum price.
+```
+function buyNFT(
+    address owner,
+    address nft,
+    uint256 tokenId,
+    uint256 amount,
+    address payable seller) public
+```
+
+* *owner* will be the new owner of the NFT (must be a Safe wallet address)
+* *nft* contract for ERC721 being bought
+* *tokenId* nft index
+* *amount* maximum amount new owner is willing to pay for NFT
+* *seller* market place contract that processes the purchase (use the Mock Market contract adaptor example)
+
+Initiates the process of buying an NFT from a seller, considering the set maximum price. Will transfer funds from Safe wallet from owner, send them to seller and expect the NFT to be sent to the contract in an atomic operation. The function will then forward the NFT to the owner address. If any of these steps fail or the NFT is not sent in return for payment, the entire call reverts.
 
 ### Selling
 
 #### setSellAllowance
-
-Sellers can set allowances for their NFTs to be sold, specifying minimum prices and transfer permissions.
 
 ```
 function setSellAllowance(
@@ -76,6 +106,8 @@ function setSellAllowance(
     bool canBeTransferred
 ) external
 ```
+
+Sellers can set allowances for their NFTs to be sold, specifying minimum prices and transfer permissions.
 
 Sets an allowance for the specified ERC721 token. The owner can grant or revoke permissions for selling and transferring, along with associated parameters like minimum price and destination address.
 
